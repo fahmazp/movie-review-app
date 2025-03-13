@@ -69,14 +69,62 @@ export const userLogin = async (req,res,next) => {
 
         // check user is Active
         if (!userExist.isActive) {
-            return res.status(400).json({message:"User account is deactivated!"})
+            return res.status(401).json({message:"User account is deactivated!"})
         }
 
         //generate token using id and role
         const token = generateToken(userExist._id, "user")
         res.cookie("token", token)
 
+        // deleting pswd from userExist object(to hide password from the frontend)
+        delete userExist._doc.password;
+
         res.json({data:userExist, message:"Login success"})
+
+    } catch (error) {
+       res.status(500).json({message: 'Internal Server Error'})
+    }
+}
+
+export const userProfile = async (req,res,next) => {
+    try {        
+
+        //fetching userid and storing it
+        const userId = req.user.id
+        const userData = await User.findById(userId)
+
+        res.json({data: userData, message:"User profile fetched"})
+
+    } catch (error) {
+       res.status(500).json({message: 'Internal Server Error'})
+    }
+}
+
+export const userUpdateProfile = async (req,res,next) => {
+    try {        
+        
+        const { name,email,password,confirmPassword,mobile,profiePic }=req.body;
+
+        //fetching userid and storing it
+        const userId = req.user.id
+        const userData = await User.findByIdAndUpdate(
+            userId,
+            {name,email,password,confirmPassword,mobile,profiePic},
+            { new:true }
+        );
+
+        res.json({data: userData, message:"User profile updated"})
+
+    } catch (error) {
+       res.status(500).json({message: 'Internal Server Error'})
+    }
+}
+
+export const userLogout = async (req,res,next) => {
+    try {        
+        
+        res.clearCookie("token");
+        res.json({message:"You have been logged out!"})
 
     } catch (error) {
        res.status(500).json({message: 'Internal Server Error'})
