@@ -116,7 +116,7 @@ export const userUpdateProfile = async (req,res,next) => {
         res.json({data: userData, message:"User profile updated"})
 
     } catch (error) {
-       res.status(500).json({message: 'Internal Server Error'})
+       return res.status(500).json({message: 'Internal Server Error'})
     }
 }
 
@@ -127,6 +127,16 @@ export const userLogout = async (req,res,next) => {
         res.json({message:"You have been logged out!"})
 
     } catch (error) {
-       res.status(500).json({message: 'Internal Server Error'})
+       return res.status(500).json({message: 'Internal Server Error'})
+    }
+}
+
+export const checkUser = async (req,res,next) => {
+    try {        
+        
+        res.json({message:"Authorized user!"})
+
+    } catch (error) {
+       return res.status(500).json({message: 'Internal Server Error'})
     }
 }

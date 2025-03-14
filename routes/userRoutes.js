@@ -1,9 +1,10 @@
 import express from 'express'
-import { userLogin, userLogout, userProfile, userSignup, userUpdateProfile } from '../controllers/userControllers.js';
+import { checkUser, userLogin, userLogout, userProfile, userSignup, userUpdateProfile } from '../controllers/userControllers.js';
 import { authUser } from '../middlewares/authUser.js';
+import { authAdmin } from '../middlewares/authAdmin.js';
 const router = express.Router()
 
-// signup
+//signup
 router.post("/signup",userSignup)
 
 //login
@@ -16,10 +17,10 @@ router.get("/profile",authUser,userProfile);
 router.put("/profile-update",authUser,userUpdateProfile);
 
 //profile-deactivate
-router.put("/deactivate");
+// router.put("/deactivate");
 
 //deactivate-user
-// router.put("/deactivate-user/:userId");
+router.put("/deactivate-user/:userId",authAdmin);
 
 //delete-accnt
 router.delete("/delete-account");
@@ -28,7 +29,7 @@ router.delete("/delete-account");
 router.get("/logout",userLogout);
 
 //check-user
-router.get("/check-user");
+router.get("/check-user",authUser,checkUser);
 
 //password-forgot
 //password-change
