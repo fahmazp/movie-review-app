@@ -19,10 +19,9 @@ export const authAdmin = (req,res,next) => {
         }
 
         // checking the role
-        if (decodedToken.role !="admin") {
+        if (decodedToken.role!="admin") {
             return res.status(401).json({message: 'Unauthorized user:Access for admins only'})    
         }
-
         req.user = decodedToken
 
         // passing to next middleware

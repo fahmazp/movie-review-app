@@ -1,9 +1,7 @@
 import express from 'express'
-import { authUser } from '../middlewares/authUser.js';
-// import { authAdmin } from '../middlewares/authAdmin.js';
 import { createMovies, getallMovies, movieDetails } from '../controllers/movieController.js';
 import { upload } from '../middlewares/multer.js';
-// import { upload } from '../middlewares/multer.js';
+import { authAdmin } from '../middlewares/authAdmin.js';
 
 const router = express.Router()
 
@@ -11,8 +9,7 @@ const router = express.Router()
 router.get("/allMovies",getallMovies);
 
 //create movies(admin only)
-// router.post("/add-movie",authAdmin,createMovies);
-router.post("/add-movie",authUser,upload.single("image"),createMovies)
+router.post("/add-movie",authAdmin,upload.single("image"),createMovies)
 
 router.get("/movieDetails/:movieId",movieDetails);
 

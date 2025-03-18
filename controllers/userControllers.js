@@ -6,7 +6,7 @@ export const userSignup = async (req,res,next) => {
     try {
         
         // collect user data
-        const {name,email,password,confirmPassword,mobile,profiePic}=req.body;
+        const { name,email,password,confirmPassword,mobile,profiePic,role }=req.body;
 
         //data validation
         if (!name || !email || !password || !confirmPassword || !mobile) {
@@ -24,15 +24,18 @@ export const userSignup = async (req,res,next) => {
             return res.status(400).json({message:"Passwords does not match"})
         }
 
+        // Assign role (default to "user" if not provided)
+        const userRole = role || "user";
+
         //hash pswd
         const hashedpswd = bcrypt.hashSync(password, 10);
 
-
-        const newUser = new User({ name, email, password: hashedpswd, mobile, profiePic })
+        // Create new user
+        const newUser = new User({ name, email, password: hashedpswd, mobile, profiePic, role: userRole })
         await newUser.save()
 
         //generate token using id and role
-        const token = generateToken(newUser._id, "user")
+        const token = generateToken(newUser._id, newUser.role)
         res.cookie("token", token)
 
         res.json({data:newUser, message:"Sign up success. User created"})
@@ -72,8 +75,9 @@ export const userLogin = async (req,res,next) => {
             return res.status(401).json({message:"User account is deactivated!"})
         }
 
-        //generate token using id and role
-        const token = generateToken(userExist._id, "user")
+        //generate token user id and role
+        const token = generateToken(userExist._id, userExist.role)
+
         res.cookie("token", token)
 
         // deleting pswd from userExist object(to hide password from the frontend)

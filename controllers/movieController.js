@@ -18,8 +18,10 @@ export const createMovies = async (req,res,next) => {
     try {        
         
         // collect movie data
-        const {title,description,genre,releaseDate,avgRating,videos}=req.body;
+        const {title,description,genre,releaseDate,videos}=req.body;
 
+        const adminId = req.user.id            
+        
         // data validation
         if (!title || !description || !genre || !releaseDate) {
             return res.status(400).json({message:"Please fill in all required fields"})
@@ -32,7 +34,6 @@ export const createMovies = async (req,res,next) => {
         const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path)
         console.log("cloudinary response====",uploadResult);
                 
-        // const adminId = req.user.id
 
         //storing to db
         const newMovie = new Movie({ 
@@ -40,9 +41,9 @@ export const createMovies = async (req,res,next) => {
             description,
             genre,
             releaseDate,
-            avgRating,
             videos,
-            image:uploadResult.url // Store Cloudinary URL
+            image:uploadResult.url, // Store Cloudinary URL
+            admin: adminId
         })
         await newMovie.save()
 

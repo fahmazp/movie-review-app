@@ -1,10 +1,11 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
-const movieSchema = new Schema(
+const movieSchema = new mongoose.Schema(
     {
     title: {
         type: String, 
-        required: true
+        required: true,
+        unique: true,
     },
     description: { 
         type: String,
@@ -18,18 +19,6 @@ const movieSchema = new Schema(
          type: Date,
          required: true,
     },
-    avgRating: { 
-        type: Number, default: 0 
-    },
-    // ratings: [{ 
-    //     userId: mongoose.Schema.Types.ObjectId, 
-    //     rating: Number,
-    // }],
-
-    // reviews: [{ 
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Review" 
-    // }],
     videos: {
         type: String,
     },
@@ -40,6 +29,10 @@ const movieSchema = new Schema(
     isActive: {
         type: Boolean,
         default: true,
+    },
+    admin: { 
+        type: mongoose.Types.ObjectId, 
+        ref: "User" // Referencing User model
     },
   }, 
   { timestamps: true }
