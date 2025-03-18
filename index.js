@@ -5,7 +5,7 @@ import { connectDB } from './config/db.js'
 import { apiRouter } from './routes/index.js';
 
 const app = express()
-const port = 3001
+const port = 3000
 
 dotenv.config()
 connectDB()

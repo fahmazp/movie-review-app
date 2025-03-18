@@ -20,7 +20,7 @@ export const authAdmin = (req,res,next) => {
 
         // checking the role
         if (decodedToken.role !="admin") {
-            return res.status(401).json({message: 'Unauthorized user:role does not match'})    
+            return res.status(401).json({message: 'Unauthorized user:Access for admins only'})    
         }
 
         req.user = decodedToken
@@ -30,7 +30,7 @@ export const authAdmin = (req,res,next) => {
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({message: 'Internal Server Error'})
+        return res.status(500).json({message: 'Internal server error'})
     }
 
 }

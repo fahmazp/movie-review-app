@@ -5,7 +5,7 @@ export const authUser = (req,res,next) => {
     try {
         
         // collect token from cookies
-        console.log('Cookies: ', req.cookies);
+        // console.log('Cookies: ', req.cookies);
         const {token} = req.cookies
         
         if (!token) {
@@ -25,8 +25,8 @@ export const authUser = (req,res,next) => {
         next()
 
     } catch (error) {
-        console.log(error);
-        res.status(500).json({message: 'Internal Server Error'})
+        console.log("Error verifying token:",error);
+        res.status(500).json({message: 'Internal server error'})
     }
 
 }

@@ -7,25 +7,40 @@ const movieSchema = new Schema(
         required: true
     },
     description: { 
-        type: String
+        type: String,
+        required: true
     },
-    genre: [{ 
-        type: String 
-    }],
+    genre: { 
+        type: String,
+        required: true,
+    },
     releaseDate: {
-         type: Date
+         type: Date,
+         required: true,
     },
-    ratings: [{ 
-        userId: mongoose.Schema.Types.ObjectId, 
-        rating: Number,
-    }],
     avgRating: { 
         type: Number, default: 0 
     },
-    reviews: [{ 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Review" 
-    }]
+    // ratings: [{ 
+    //     userId: mongoose.Schema.Types.ObjectId, 
+    //     rating: Number,
+    // }],
+
+    // reviews: [{ 
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Review" 
+    // }],
+    videos: {
+        type: String,
+    },
+    image: {
+        type: String,
+        default: "https://static1.colliderimages.com/wordpress/wp-content/uploads/sharedimages/2024/04/fight-club-movie-poster.jpg",
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
   }, 
   { timestamps: true }
 );

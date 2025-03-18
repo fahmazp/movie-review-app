@@ -21,7 +21,7 @@ export const userSignup = async (req,res,next) => {
 
         //compare with confirm pswd
         if (password !== confirmPassword) {
-            return res.status(400).json({message:"Passwords didnot match"})
+            return res.status(400).json({message:"Passwords does not match"})
         }
 
         //hash pswd
@@ -46,7 +46,7 @@ export const userSignup = async (req,res,next) => {
 export const userLogin = async (req,res,next) => {
     try {
         
-        // collect user data
+        // collect user data from frontend
         const {email,password}=req.body;
 
         //data validation
@@ -91,7 +91,7 @@ export const userProfile = async (req,res,next) => {
 
         //fetching userid and storing it
         const userId = req.user.id
-        const userData = await User.findById(userId)
+        const userData = await User.findById(userId).select("-password")
 
         res.json({data: userData, message:"User profile fetched"})
 
@@ -103,6 +103,7 @@ export const userProfile = async (req,res,next) => {
 export const userUpdateProfile = async (req,res,next) => {
     try {        
         
+        // collect data from frontend
         const { name,email,password,confirmPassword,mobile,profiePic }=req.body;
 
         //fetching userid and storing it
