@@ -1,5 +1,5 @@
 import express from 'express'
-import { createMovies, getallMovies, movieDetails } from '../controllers/movieController.js';
+import { createMovies, getallMovies, movieDetails, updateMovies } from '../controllers/movieController.js';
 import { upload } from '../middlewares/multer.js';
 import { authAdmin } from '../middlewares/authAdmin.js';
 
@@ -15,7 +15,7 @@ router.post("/add-movie",authAdmin,upload.single("image"),createMovies)
 router.get("/movieDetails/:movieId",movieDetails);
 
 //edit movies
-// router.put("/movies-update",authAdmin,updateMovies);
+router.put("/update-movie/:movieId", authAdmin,updateMovies)
 
 //fetch movies based on genre
 

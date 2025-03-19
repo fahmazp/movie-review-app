@@ -55,7 +55,7 @@ export const createMovies = async (req,res,next) => {
         res.json({ data:newMovie, message:"New movie created!"})
 
     } catch (error) {
-       res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
+       res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
     }
 }
 
@@ -74,6 +74,28 @@ export const movieDetails = async (req,res,next) => {
         res.json({ data:movieDetails, message:"Movie details fetched!"})
 
     } catch (error) {
-        res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
     }
 }
+
+export const updateMovies = async (req, res) => {
+    try {
+
+        const { movieId } = req.params; // Get movie ID from URL
+        const updatedData = req.body; // Data to update
+
+        // Find and update the movie
+        const updatedMovie = await Movie.findByIdAndUpdate(movieId, updatedData, { new: true, runValidators: true });
+
+        if (!updatedMovie) {
+            return res.status(404).json({ message: "Movie not found" });
+        }
+
+        res.status(200).json({ data: updatedMovie, message: "Movie updated successfully!" });
+    } catch (error) {
+        console.error(error);
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
+    }
+}
+
+
