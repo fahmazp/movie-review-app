@@ -17,7 +17,7 @@ export const addReview = async (req,res,next) => {
             return res.status(404).json({message:"Movie not found"})
         }
 
-        if (rating>5 || rating<1) {
+        if (rating > 5 || rating < 1) {
             return res.status(400).json({message:"Invalid rating.Must be a number within the given range"})
         }
 
@@ -25,10 +25,10 @@ export const addReview = async (req,res,next) => {
         const review = await Review.findOneAndUpdate(
             { userId, movieId },
             { rating, comment },
-            { new:true, upsert:true } //upsert -> insert+update
-        )
+            { new:true, upsert:true } //upsert -> insert+update, optional parameter
+        ).populate("movieId", "title"); // fetch movie title by Populate
 
-        res.status(201).json({ data:review, message:"Review added!"})
+        res.status(201).json({ data:review, message:"Review added for the movie!"})
 
     } catch (error) {
        res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
@@ -48,8 +48,8 @@ export const getMovieReviews = async (req, res) => {
 
         res.status(200).json({ data: reviews, message: "Movie reviews fetched" });
     } catch (error) {
-        res.status(500).json({ message: "Internal server error", error });
-    }
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
+     }
 };
 
 export const deleteReview = async (req, res) => {
@@ -81,7 +81,7 @@ export const getAvgRating = async (req, res) => {
         const reviews = await Review.find({ movieId })
 
         if (!reviews.length) {
-            return res.status(404).json({ message: "No reviews found for this movie" });
+            return res.status(200).json({ data: 0, message: "No reviews yet" })
         }
 
         // calculating avg rating of the movie
@@ -93,3 +93,24 @@ export const getAvgRating = async (req, res) => {
     }
 }
 
+export const getUserReviews = async (req, res) => {
+
+    try {
+        // collect user id from params
+        const { userId } = req.params;
+
+        // fetch reviews written by the specific user, sorted by latest
+        const reviews = await Review.find({ userId }).populate("movieId", "title").sort({ createdAt: -1 });
+
+        // check if user has written any reviews
+        if (!reviews.length) {
+            return res.status(404).json({ message: "No reviews found for this user" });
+        }
+
+        res.status(200).json({ data: reviews, message: "User reviews fetched successfully" });
+        } catch (error) {
+            res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
+        }
+
+
+}

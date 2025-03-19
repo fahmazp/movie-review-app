@@ -11,6 +11,7 @@ router.get("/allMovies",getallMovies);
 //create movies(admin only)
 router.post("/add-movie",authAdmin,upload.single("image"),createMovies)
 
+// details of a movie
 router.get("/movieDetails/:movieId",movieDetails);
 
 //edit movies

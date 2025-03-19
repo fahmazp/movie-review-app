@@ -6,11 +6,15 @@ export const getallMovies = async (req,res,next) => {
     try {        
         
         //fetching all movies
-        const moviesList = await Movie.find().select("-genre -videos")
+        const moviesList = await Movie.find().select("-duration -videos")
+        if (!moviesList || moviesList.length === 0) {
+            return res.status(404).json({ message: "No movies found!" });
+        }
+
         res.json({ data:moviesList, message:"Movies listed!"})
 
     } catch (error) {
-       res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
+       res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
     }
 }
 
@@ -18,12 +22,12 @@ export const createMovies = async (req,res,next) => {
     try {        
         
         // collect movie data
-        const {title,description,genre,releaseDate,videos}=req.body;
+        const {title,description,genre,releaseDate,duration,videos}=req.body;
 
         const adminId = req.user.id            
         
         // data validation
-        if (!title || !description || !genre || !releaseDate) {
+        if (!title || !description || !genre || !releaseDate || !duration) {
             return res.status(400).json({message:"Please fill in all required fields"})
         }
 
@@ -41,6 +45,7 @@ export const createMovies = async (req,res,next) => {
             description,
             genre,
             releaseDate,
+            duration,
             videos,
             image:uploadResult.url, // Store Cloudinary URL
             admin: adminId
@@ -62,6 +67,10 @@ export const movieDetails = async (req,res,next) => {
 
         const movieDetails = await Movie.findById(movieId)
         
+        if (!movieDetails) {
+            return res.status(404).json({ message: "Movie not found" });
+        }
+
         res.json({ data:movieDetails, message:"Movie details fetched!"})
 
     } catch (error) {
