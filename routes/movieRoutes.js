@@ -15,7 +15,7 @@ router.post("/add-movie",authAdmin,upload.single("image"),createMovies)
 router.get("/movieDetails/:movieId",movieDetails);
 
 //edit movies
-router.put("/update-movie/:movieId", authAdmin,updateMovies)
+router.put("/update-movie/:movieId",authAdmin,upload.single("image"),updateMovies)
 
 //fetch movies based on genre
 

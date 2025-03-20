@@ -93,6 +93,43 @@ export const getAvgRating = async (req, res) => {
     }
 }
 
+export const getTopRatedMovies = async (req, res) => {
+    try {
+
+        const topMovies = await Movie.aggregate([
+            {
+                $lookup: {
+                    from: "reviews", // Collection name (MongoDB auto-pluralizes it)
+                    localField: "_id",
+                    foreignField: "movieId",
+                    as: "reviews",
+                },
+            },
+            {
+                $addFields: {
+                    avgRating: { $avg: "$reviews.rating" }, // Calculate average rating
+                },
+            },
+            {
+                $addFields: {
+                    avgRating: { $ifNull: ["$avgRating", 0] }, // Default 0 if no ratings
+                },
+            },
+            { $sort: { avgRating: -1 } }, // Sort by highest rating
+            { $project: { reviews: 0 } }, // Exclude reviews array
+        ]);
+
+        if (!topMovies.length) {
+            return res.status(404).json({ message: "No movies found!" });
+        }
+
+        res.status(200).json({ data: topMovies, message: "Top-rated movies listed!" });
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
+    }
+
+}
+
 export const getUserReviews = async (req, res) => {
 
     try {
