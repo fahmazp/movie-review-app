@@ -42,5 +42,13 @@ const movieSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Add a virtual property to format the release date
+    movieSchema.virtual("formattedReleaseDate").get(function () {
+    return this.releaseDate ? new Date(this.releaseDate).getFullYear().toString() : "";
+  });
+  
+  // Ensure virtuals are included when converting the document to JSON or an object
+  movieSchema.set("toJSON", { virtuals: true });
+  movieSchema.set("toObject", { virtuals: true });
 
 export const Movie = mongoose.model("Movie", movieSchema);
