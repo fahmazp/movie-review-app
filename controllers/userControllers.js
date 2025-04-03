@@ -72,18 +72,18 @@ export const userLogin = async (req,res,next) => {
 
         // check user is Active
         if (!userExist.isActive) {
-            return res.status(401).json({message:"User account is deactivated!"})
+            return res.status(401).json({message:"User account is inactive!"})
         }
 
-        //generate token user id and role
+        //generate jwt token user id and role
         const token = generateToken(userExist._id, userExist.role)
-
+        
         res.cookie("token", token)
 
         // deleting pswd from userExist object(to hide password from the frontend)
         delete userExist._doc.password;
 
-        res.json({data:userExist, message:"Login success"})
+        res.json({data:userExist, message:"User Login success"})
 
     } catch (error) {
        res.status(500).json({message: 'Internal Server Error'})
@@ -145,3 +145,18 @@ export const checkUser = async (req,res,next) => {
        return res.status(500).json({message: 'Internal Server Error'})
     }
 }
+
+// export const userDeactivate = async (req, res) => {
+//     try {
+//         const { userId } = req.params;
+//         const user = await User.findByIdAndUpdate(userId, { isActive: false });
+
+//         if (!user) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+
+//         res.json({ message: "User account deactivated successfully" });
+//     } catch (error) {
+//         res.status(500).json({ message: "Internal Server Error" });
+//     }
+// };
