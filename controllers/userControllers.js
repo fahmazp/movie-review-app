@@ -2,6 +2,8 @@ import { User } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/token.js";
 
+const NODE_ENV = process.env.NODE_ENV
+
 export const userSignup = async (req,res,next) => {
     try {
         
@@ -36,7 +38,11 @@ export const userSignup = async (req,res,next) => {
 
         //generate token using id and role
         const token = generateToken(newUser._id, newUser.role)
-        res.cookie("token", token)
+        res.cookie("token", token, {
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            secure: NODE_ENV === "production",
+            httpOnly: NODE_ENV === "production",
+        });
 
         res.json({data:newUser, message:"Sign up success. User created"})
 
@@ -78,7 +84,12 @@ export const userLogin = async (req,res,next) => {
         //generate jwt token user id and role
         const token = generateToken(userExist._id, userExist.role)
         
-        res.cookie("token", token)
+        // storing token
+        res.cookie("token", token, {
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            secure: NODE_ENV === "production",
+            httpOnly: NODE_ENV === "production",
+        });
 
         // deleting pswd from userExist object(to hide password from the frontend)
         delete userExist._doc.password;
@@ -128,7 +139,11 @@ export const userUpdateProfile = async (req,res,next) => {
 export const userLogout = async (req,res,next) => {
     try {        
         
-        res.clearCookie("token");
+        res.clearCookie("token",{
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            secure: NODE_ENV === "production",
+            httpOnly: NODE_ENV === "production",
+        })
         res.json({message:"You have been logged out!"})
 
     } catch (error) {
