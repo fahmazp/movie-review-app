@@ -153,6 +153,7 @@ export const userLogout = async (req,res,next) => {
 
 export const checkUser = async (req,res,next) => {
     try {          
+        // console.log("Cookies received:", req.cookies)
         res.json({message:"Authorized user!"})
 
     } catch (error) {
