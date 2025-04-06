@@ -84,13 +84,6 @@ export const userLogin = async (req,res,next) => {
         //generate jwt token user id and role
         const token = generateToken(userExist._id, userExist.role)
         
-        // debug log to check cookie settings
-        console.log("Sending cookie with config:", {
-            sameSite: NODE_ENV === "production" ? "None" : "Lax",
-            secure: NODE_ENV === "production",
-            httpOnly: NODE_ENV === "production",
-        });        
-
         // storing token
         res.cookie("token", token, {
             sameSite: NODE_ENV === "production" ? "None" : "Lax",
@@ -104,7 +97,7 @@ export const userLogin = async (req,res,next) => {
         res.json({data:userExist, message:"User Login success"})
 
     } catch (error) {
-       res.status(500).json({message: 'Internal Server Error'})
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
     }
 }
 
@@ -118,7 +111,7 @@ export const userProfile = async (req,res,next) => {
         res.json({data: userData, message:"User profile fetched"})
 
     } catch (error) {
-       res.status(500).json({message: 'Internal Server Error'})
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
     }
 }
 
@@ -139,7 +132,7 @@ export const userUpdateProfile = async (req,res,next) => {
         res.json({data: userData, message:"User profile updated"})
 
     } catch (error) {
-       return res.status(500).json({message: 'Internal Server Error'})
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
     }
 }
 
@@ -154,17 +147,16 @@ export const userLogout = async (req,res,next) => {
         res.json({message:"You have been logged out!"})
 
     } catch (error) {
-       return res.status(500).json({message: 'Internal Server Error'})
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
     }
 }
 
 export const checkUser = async (req,res,next) => {
     try {          
-        console.log("Cookies received:", req.cookies)
         res.json({message:"Authorized user!"})
 
     } catch (error) {
-       return res.status(500).json({message: 'Internal Server Error'})
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
     }
 }
 
