@@ -84,6 +84,13 @@ export const userLogin = async (req,res,next) => {
         //generate jwt token user id and role
         const token = generateToken(userExist._id, userExist.role)
         
+        // debug log to check cookie settings
+        console.log("Sending cookie with config:", {
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            secure: NODE_ENV === "production",
+            httpOnly: NODE_ENV === "production",
+        });        
+
         // storing token
         res.cookie("token", token, {
             sameSite: NODE_ENV === "production" ? "None" : "Lax",
@@ -153,7 +160,7 @@ export const userLogout = async (req,res,next) => {
 
 export const checkUser = async (req,res,next) => {
     try {          
-        // console.log("Cookies received:", req.cookies)
+        console.log("Cookies received:", req.cookies)
         res.json({message:"Authorized user!"})
 
     } catch (error) {
