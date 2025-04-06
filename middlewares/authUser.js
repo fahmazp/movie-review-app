@@ -14,6 +14,7 @@ export const authUser = (req,res,next) => {
 
         // decoding token
         const decodedToken = jwt.verify(token, process.env.JWT_SECRETKEY);
+        console.log(decodedToken, "=========Decoded token");
 
         if (!decodedToken) {
             return res.status(401).json({message: 'Unauthorized user'})    
@@ -25,8 +26,8 @@ export const authUser = (req,res,next) => {
         next()
 
     } catch (error) {
-        console.log("Error verifying token:",error);
-        res.status(500).json({message: 'Internal server error'})
+        console.log(error);
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
     }
 
 }

@@ -152,8 +152,7 @@ export const userLogout = async (req,res,next) => {
 }
 
 export const checkUser = async (req,res,next) => {
-    try {        
-        
+    try {          
         res.json({message:"Authorized user!"})
 
     } catch (error) {

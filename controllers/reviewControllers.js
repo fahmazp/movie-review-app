@@ -137,7 +137,7 @@ export const getUserReviews = async (req, res) => {
         const { userId } = req.params;
 
         // fetch reviews written by the specific user, sorted by latest
-        const reviews = await Review.find({ userId }).populate("movieId", "title").sort({ createdAt: -1 });
+        const reviews = await Review.find({ userId }).populate("movieId", "title image").sort({ createdAt: -1 });
 
         // check if user has written any reviews
         if (!reviews.length) {
