@@ -1,6 +1,7 @@
 import { User } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/token.js";
+import { cloudinaryInstance } from "../config/cloudinary.js";
 
 const NODE_ENV = process.env.NODE_ENV
 
@@ -116,25 +117,38 @@ export const userProfile = async (req,res,next) => {
 }
 
 export const userUpdateProfile = async (req,res,next) => {
-    try {        
+    try {
+        console.log("REQ FILE:", req.file);
+        const { name, email, password, confirmPassword, mobile } = req.body;
+        const userId = req.user.id;
+    
+        const updateData = { name, email, password, confirmPassword, mobile };
+    
+        // Handle file upload if image exists
+        if (req.file) {
+            try {
+                const result = await cloudinaryInstance.uploader.upload(req.file.path);
+                updateData.profiePic = result.secure_url;
         
-        // collect data from frontend
-        const { name,email,password,confirmPassword,mobile,profiePic }=req.body;
-
-        //fetching userid and storing it
-        const userId = req.user.id
-        const userData = await User.findByIdAndUpdate(
-            userId,
-            {name,email,password,confirmPassword,mobile,profiePic},
-            { new:true }
+              } catch (cloudErr) {
+                console.error("Cloudinary error:", cloudErr);
+                return res.status(500).json({ message: "Cloudinary upload failed" });
+              }
+        }
+    
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          updateData,
+          { new: true }
         );
+    
+        res.json({ data: updatedUser, message: "User profile updated" });
+      } catch (error) {
+        console.error("Update failed:", error);
+        res.status(500).json({ message: error.message || "Internal server error" });
+      }
+    };
 
-        res.json({data: userData, message:"User profile updated"})
-
-    } catch (error) {
-        res.status(error.statusCode || 500).json({ message: error.message || "Internal server" });
-    }
-}
 
 export const userLogout = async (req,res,next) => {
     try {        

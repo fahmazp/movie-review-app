@@ -22,12 +22,11 @@ export const createMovies = async (req,res,next) => {
     try {        
         
         // collect movie data
-        const {title,description,genre,releaseDate,duration,videos}=req.body;
-
+        const {title,description,genre,releaseDate,duration,videos,media_type,cast,directedBy}=req.body;
         const adminId = req.user.id            
         
         // data validation
-        if (!title || !description || !genre || !releaseDate || !duration) {
+        if (!title || !description || !genre || !releaseDate || !duration || !media_type) {
             return res.status(400).json({message:"Please fill in all required fields"})
         }
 
@@ -38,6 +37,9 @@ export const createMovies = async (req,res,next) => {
         const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path)
         console.log("cloudinary response====",uploadResult);
                 
+        // Fallbacks if not provided
+        const parsedCast = Array.isArray(cast) && cast.length > 0 ? cast : ["NA"];
+        const safeDirectedBy = directedBy?.trim() || "NA";        
 
         //storing to db and saving it
         const newMovie = new Movie({ 
@@ -48,6 +50,9 @@ export const createMovies = async (req,res,next) => {
             duration,
             videos,
             image:uploadResult.url, // Store Cloudinary URL
+            media_type,
+            cast: parsedCast,
+            directedBy: safeDirectedBy,
             admin: adminId
         })
         await newMovie.save()
@@ -101,7 +106,7 @@ export const movieDetails = async (req,res,next) => {
 export const updateMovies = async (req, res) => {
     try {
         const { movieId } = req.params; // Get movie ID from URL
-        let updatedData = req.body; // Get text fields
+        let updatedData = req.body;
 
         // Convert form-data fields into JSON format
         if (typeof updatedData === "object") {
@@ -113,6 +118,14 @@ export const updateMovies = async (req, res) => {
             const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path)
             console.log("cloudinary update response====",uploadResult);
             updatedData.image = uploadResult.url; // Store Cloudinary URL
+        }
+
+        // Normalize missing fields
+          if (!updatedData.cast || updatedData.cast.length === 0) {
+          updatedData.cast = ["NA"];
+        }
+        if (!updatedData.directedBy) {
+          updatedData.directedBy = "NA";
         }
 
         // Find and update the movie

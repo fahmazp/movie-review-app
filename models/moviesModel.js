@@ -30,9 +30,23 @@ const movieSchema = new mongoose.Schema(
         type: String,
         default: "https://static1.colliderimages.com/wordpress/wp-content/uploads/sharedimages/2024/04/fight-club-movie-poster.jpg",
     },
+    media_type: {
+        type: String,
+        enum: ['film', 'tv_show'],
+        required: true,
+        lowercase: true,
+    },
     isActive: {
         type: Boolean,
         default: true,
+    },
+    cast: {
+        type: [String],
+        default: ["NA"],
+    },
+    directedBy: {
+        type: String,
+        default: "NA",
     },
     admin: { 
         type: mongoose.Types.ObjectId, 
