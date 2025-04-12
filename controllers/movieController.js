@@ -5,8 +5,14 @@ import { Movie } from "../models/moviesModel.js";
 export const getallMovies = async (req,res,next) => {
     try {        
         
+        const { type } = req.query; 
+        const filter = {};
+        if (type) {
+          filter.media_type = type.toLowerCase()
+        }
+
         //fetching all movies
-        const moviesList = await Movie.find().select("-duration -videos")
+        const moviesList = await Movie.find(filter).select("-duration -videos")
         if (!moviesList || moviesList.length === 0) {
             return res.status(404).json({ message: "No movies found!" });
         }
