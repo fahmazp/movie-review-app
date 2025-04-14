@@ -12,7 +12,7 @@ export const getallMovies = async (req,res,next) => {
         }
 
         //fetching all movies
-        const moviesList = await Movie.find(filter).select("-duration -videos")
+        const moviesList = await Movie.find(filter).select("-duration -videos").lean()
         if (!moviesList || moviesList.length === 0) {
             return res.status(404).json({ message: "No movies found!" });
         }
