@@ -37,8 +37,4 @@ router.get("/logout",userLogout);
 //check-user
 router.get("/check-user",authUser,checkUser);
 
-//password-forgot
-//password-change
-//address update
-
 export { router as userRouter };
