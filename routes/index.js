@@ -3,6 +3,7 @@ import { userRouter } from './userRoutes.js'
 import { movieRouter } from './movieRoutes.js'
 import { reviewRouter } from './reviewRoutes.js'
 import { watchlistRouter } from './watchlistRoutes.js'
+import { adminRouter } from './adminRoutes.js'
 
 const router = express.Router()
 
@@ -10,6 +11,6 @@ router.use("/user",userRouter)
 router.use("/movie",movieRouter)
 router.use("/reviews",reviewRouter)
 router.use("/watchlist",watchlistRouter)
+router.use("/admin",adminRouter)
 
-// router.use("/admin",adminRouter)
 export {router as apiRouter}
