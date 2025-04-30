@@ -19,6 +19,4 @@ router.put("/update-movie/:movieId",authAdmin,upload.single("image"),updateMovie
 
 //fetch movies based on genre
 
-//fetch movies based on ratings
-
 export { router as movieRouter };
