@@ -44,7 +44,13 @@ export const createMovies = async (req,res,next) => {
         console.log("cloudinary response====",uploadResult);
                 
         // Fallbacks if not provided
-        const parsedCast = Array.isArray(cast) && cast.length > 0 ? cast : ["NA"];
+        // const parsedCast = Array.isArray(cast) && cast.length > 0 ? cast : ["NA"];
+        const parsedCast =
+        typeof cast === "string"
+          ? cast.split(",").map((actor) => actor.trim()).filter(Boolean)
+          : Array.isArray(cast) && cast.length > 0
+          ? cast
+          : ["NA"];
         const safeDirectedBy = directedBy?.trim() || "NA";        
 
         //storing to db and saving it
