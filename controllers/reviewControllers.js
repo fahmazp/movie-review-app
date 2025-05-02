@@ -116,7 +116,7 @@ export const getTopRatedMovies = async (req, res) => {
                 },
             },
             { $sort: { avgRating: -1 } }, // Sort by highest rating
-            { $limit: 6 },
+            { $limit: 10 },
             { $project: { reviews: 0 } }, // Exclude reviews array
         ]);
 

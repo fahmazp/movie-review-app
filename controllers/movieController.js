@@ -2,27 +2,81 @@ import { cloudinaryInstance } from "../config/cloudinary.js";
 import { Movie } from "../models/moviesModel.js";
 
 
-export const getallMovies = async (req,res,next) => {
-    try {        
+// export const getallMovies = async (req,res,next) => {
+//     try {        
         
-        const { type } = req.query; 
-        const filter = {};
-        if (type) {
-          filter.media_type = type.toLowerCase()
-        }
+//         const { type } = req.query; 
+//         const filter = {};
+//         if (type) {
+//           filter.media_type = type.toLowerCase()
+//         }
 
-        //fetching all movies
-        const moviesList = await Movie.find(filter).select("-duration -videos").lean()
-        if (!moviesList || moviesList.length === 0) {
-            return res.status(404).json({ message: "No movies found!" });
-        }
+//         //fetching all movies
+//         const moviesList = await Movie.find(filter).select("-duration -videos").lean()
+//         if (!moviesList || moviesList.length === 0) {
+//             return res.status(404).json({ message: "No movies found!" });
+//         }
 
-        res.json({ data:moviesList, message:"Movies listed!"})
+//         res.json({ data:moviesList, message:"Movies listed!"})
 
+//     } catch (error) {
+//        res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
+//     }
+// }
+
+export const getallMovies = async (req, res, next) => {
+    try {
+      const { type } = req.query;
+  
+      const matchFilter = {};
+      if (type) {
+        matchFilter.media_type = type.toLowerCase();
+      }
+  
+      const moviesList = await Movie.aggregate([
+        { $match: matchFilter },
+        {
+          $lookup: {
+            from: "reviews",
+            localField: "_id",
+            foreignField: "movieId",
+            as: "reviews",
+          },
+        },
+        {
+          $addFields: {
+            avgRating: { $avg: "$reviews.rating" },
+          },
+        },
+        {
+          $addFields: {
+            avgRating: { $ifNull: ["$avgRating", 0] }, 
+          },
+        },
+        {
+          $project: {
+            reviews: 0,
+            videos: 0,
+            duration: 0,
+          },
+        },
+      ]);
+  
+      if (!moviesList || moviesList.length === 0) {
+        return res.status(404).json({ message: "No movies found!" });
+      }
+  
+      res.status(200).json({
+        data: moviesList,
+        message: "Movies with avg ratings listed!",
+      });
     } catch (error) {
-       res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
+      res.status(error.statusCode || 500).json({
+        message: error.message || "Internal server error",
+      });
     }
-}
+  };
+  
 
 export const createMovies = async (req,res,next) => {
     try {        
