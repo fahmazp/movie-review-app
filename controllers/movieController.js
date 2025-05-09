@@ -3,8 +3,7 @@ import { Movie } from "../models/moviesModel.js";
 
 
 // export const getallMovies = async (req,res,next) => {
-//     try {        
-        
+//     try {                
 //         const { type } = req.query; 
 //         const filter = {};
 //         if (type) {
@@ -60,6 +59,11 @@ export const getallMovies = async (req, res, next) => {
             duration: 0,
           },
         },
+
+        {
+          $sort: { title: 1 },
+        }
+
       ]);
   
       if (!moviesList || moviesList.length === 0) {
