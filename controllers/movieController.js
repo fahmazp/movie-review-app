@@ -1,38 +1,17 @@
 import { cloudinaryInstance } from "../config/cloudinary.js";
 import { Movie } from "../models/moviesModel.js";
 
-
-// export const getallMovies = async (req,res,next) => {
-//     try {                
-//         const { type } = req.query; 
-//         const filter = {};
-//         if (type) {
-//           filter.media_type = type.toLowerCase()
-//         }
-
-//         //fetching all movies
-//         const moviesList = await Movie.find(filter).select("-duration -videos").lean()
-//         if (!moviesList || moviesList.length === 0) {
-//             return res.status(404).json({ message: "No movies found!" });
-//         }
-
-//         res.json({ data:moviesList, message:"Movies listed!"})
-
-//     } catch (error) {
-//        res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
-//     }
-// }
-
 export const getallMovies = async (req, res, next) => {
-    try {
-      const { type } = req.query;
-  
-      const matchFilter = {};
-      if (type) {
-        matchFilter.media_type = type.toLowerCase();
-      }
-  
-      const moviesList = await Movie.aggregate([
+  try {
+    const { type, page = 1, limit = 20 } = req.query;
+    const matchFilter = {};
+    if (type) {
+      matchFilter.media_type = type.toLowerCase();
+    }
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [moviesList, totalMovies] = await Promise.all([
+      Movie.aggregate([
         { $match: matchFilter },
         {
           $lookup: {
@@ -49,7 +28,7 @@ export const getallMovies = async (req, res, next) => {
         },
         {
           $addFields: {
-            avgRating: { $ifNull: ["$avgRating", 0] }, 
+            avgRating: { $ifNull: ["$avgRating", 0] },
           },
         },
         {
@@ -59,27 +38,82 @@ export const getallMovies = async (req, res, next) => {
             duration: 0,
           },
         },
+        { $sort: { title: 1 } },
+        { $skip: skip },
+        { $limit: parseInt(limit) },
+      ]),
+      Movie.countDocuments(matchFilter),
+    ]);
 
-        {
-          $sort: { title: 1 },
-        }
+    res.status(200).json({
+      data: moviesList,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalMovies / parseInt(limit)),
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Internal server error",
+    });
+  }
+};
 
-      ]);
+// export const getallMovies = async (req, res, next) => {
+//     try {
+//       const { type } = req.query;
   
-      if (!moviesList || moviesList.length === 0) {
-        return res.status(404).json({ message: "No movies found!" });
-      }
+//       const matchFilter = {};
+//       if (type) {
+//         matchFilter.media_type = type.toLowerCase();
+//       }
   
-      res.status(200).json({
-        data: moviesList,
-        message: "Movies with avg ratings listed!",
-      });
-    } catch (error) {
-      res.status(error.statusCode || 500).json({
-        message: error.message || "Internal server error",
-      });
-    }
-  };
+//       const moviesList = await Movie.aggregate([
+//         { $match: matchFilter },
+//         {
+//           $lookup: {
+//             from: "reviews",
+//             localField: "_id",
+//             foreignField: "movieId",
+//             as: "reviews",
+//           },
+//         },
+//         {
+//           $addFields: {
+//             avgRating: { $avg: "$reviews.rating" },
+//           },
+//         },
+//         {
+//           $addFields: {
+//             avgRating: { $ifNull: ["$avgRating", 0] }, 
+//           },
+//         },
+//         {
+//           $project: {
+//             reviews: 0,
+//             videos: 0,
+//             duration: 0,
+//           },
+//         },
+
+//         {
+//           $sort: { title: 1 },
+//         }
+
+//       ]);
+  
+//       if (!moviesList || moviesList.length === 0) {
+//         return res.status(404).json({ message: "No movies found!" });
+//       }
+  
+//       res.status(200).json({
+//         data: moviesList,
+//         message: "Movies with avg ratings listed!",
+//       });
+//     } catch (error) {
+//       res.status(error.statusCode || 500).json({
+//         message: error.message || "Internal server error",
+//       });
+//     }
+//   };
   
 
 export const createMovies = async (req,res,next) => {
