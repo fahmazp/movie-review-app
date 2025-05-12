@@ -133,7 +133,7 @@ export const createMovies = async (req,res,next) => {
           }
         // Upload image to cloudinary
         const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path)
-        console.log("cloudinary response====",uploadResult);
+        // console.log("cloudinary response====",uploadResult);
                 
         // Fallbacks if not provided
         // const parsedCast = Array.isArray(cast) && cast.length > 0 ? cast : ["NA"];
@@ -154,6 +154,7 @@ export const createMovies = async (req,res,next) => {
             duration,
             videos,
             image:uploadResult.url, // Store Cloudinary URL
+            // imagePublicId: uploadResult.public_id,
             media_type,
             cast: parsedCast,
             directedBy: safeDirectedBy,
@@ -251,4 +252,26 @@ export const updateMovies = async (req, res) => {
     }
 };
 
+export const deleteMovie = async (req, res, next) => {
 
+  try {
+    const { movieId } = req.params;
+    const movieDelete = await Movie.findById(movieId);
+    if (!movieDelete) {
+        return res.status(404).json({ message: "Movie not found" });
+    }
+
+    // Optional: remove image from cloudinary
+    // if your cloudinary upload returns a public_id and you save it
+    // const publicId = movie.imagePublicId;
+    // if (publicId) {
+    //   await cloudinaryInstance.uploader.destroy(publicId);
+    // }
+
+    await Movie.findByIdAndDelete(movieId);
+    res.status(200).json({ message: "Movie deleted successfully!" });
+
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
+  }
+}

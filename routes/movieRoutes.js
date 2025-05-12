@@ -1,5 +1,5 @@
 import express from 'express'
-import { createMovies, getallMovies, movieDetails, updateMovies } from '../controllers/movieController.js';
+import { createMovies, deleteMovie, getallMovies, movieDetails, updateMovies } from '../controllers/movieController.js';
 import { upload } from '../middlewares/multer.js';
 import { authAdmin } from '../middlewares/authAdmin.js';
 
@@ -17,6 +17,8 @@ router.get("/movieDetails/:movieId",movieDetails);
 //edit movies
 router.put("/update-movie/:movieId",authAdmin,upload.single("image"),updateMovies)
 
+//delete (admin only)
+router.delete("/delete-movie/:movieId",authAdmin,deleteMovie)
 //fetch movies based on genre
 
 export { router as movieRouter };
