@@ -89,7 +89,9 @@ export const userLogin = async (req,res,next) => {
         res.cookie("token", token, {
             sameSite: NODE_ENV === "production" ? "None" : "Lax",
             secure: NODE_ENV === "production",
-            httpOnly: NODE_ENV === "production",
+            //httpOnly: NODE_ENV === "production",
+             httpOnly: true, // Always set this, even in dev
+             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
         // deleting pswd from userExist object(to hide password from the frontend)
@@ -156,7 +158,8 @@ export const userLogout = async (req,res,next) => {
         res.clearCookie("token",{
             sameSite: NODE_ENV === "production" ? "None" : "Lax",
             secure: NODE_ENV === "production",
-            httpOnly: NODE_ENV === "production",
+            // httpOnly: NODE_ENV === "production",
+            httpOnly: true,
         })
         res.json({message:"You have been logged out!"})
 
