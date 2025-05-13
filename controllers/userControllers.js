@@ -87,6 +87,7 @@ export const userLogin = async (req,res,next) => {
         
         // storing token
         res.cookie("token", token, {
+            path: "/",
             sameSite: NODE_ENV === "production" ? "None" : "Lax",
             secure: NODE_ENV === "production",
             //httpOnly: NODE_ENV === "production",
@@ -156,11 +157,11 @@ export const userLogout = async (req,res,next) => {
     try {        
         
         res.clearCookie("token",{
+            path: "/",
             sameSite: NODE_ENV === "production" ? "None" : "Lax",
             secure: NODE_ENV === "production",
             // httpOnly: NODE_ENV === "production",
             httpOnly: true,
-            path: "/",
         })
         res.json({message:"You have been logged out!"})
 
