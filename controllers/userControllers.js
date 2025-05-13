@@ -160,6 +160,7 @@ export const userLogout = async (req,res,next) => {
             secure: NODE_ENV === "production",
             // httpOnly: NODE_ENV === "production",
             httpOnly: true,
+            path: "/",
         })
         res.json({message:"You have been logged out!"})
 
