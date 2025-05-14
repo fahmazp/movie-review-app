@@ -26,5 +26,4 @@ router.put("/block-user/:userId", authAdmin, blockUser);
 router.put("/unblock-user/:userId", authAdmin, unblockUser);
 router.delete("/delete-user/:userId", authAdmin, deleteUser);
   
-
 export { router as adminRouter }

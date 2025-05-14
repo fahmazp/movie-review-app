@@ -191,4 +191,19 @@ export const checkUser = async (req,res,next) => {
 //     } catch (error) {
 //         res.status(500).json({ message: "Internal Server Error" });
 //     }
-// };
+// }
+
+// export const userActivate = async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     const user = await User.findByIdAndUpdate(userId, { isActive: true });
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     res.json({ message: "User account activated successfully" });
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// }

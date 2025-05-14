@@ -2,7 +2,6 @@ import express from 'express'
 import { checkUser, userLogin, userLogout, userProfile, userSignup, userUpdateProfile } from '../controllers/userControllers.js';
 import { authUser } from '../middlewares/authUser.js';
 import { upload } from '../middlewares/multer.js';
-import { authAdmin } from '../middlewares/authAdmin.js';
 const router = express.Router()
 
 //signup
@@ -19,9 +18,6 @@ router.put("/profile-update", authUser, upload.single("profiePic"), userUpdatePr
 
 //profile-deactivate
 // router.put("/deactivate");
-
-//deactivate-user
-// router.put("/deactivate-user/:userId",authAdmin,userDeactivate);
 
 //delete-accnt
 router.delete("/delete-account",authUser);
