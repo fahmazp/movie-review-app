@@ -92,7 +92,6 @@ export const userLogin = async (req,res,next) => {
             secure: NODE_ENV === "production",
             //httpOnly: NODE_ENV === "production",
              httpOnly: true, // Always set this, even in dev
-             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
         // deleting pswd from userExist object(to hide password from the frontend)
