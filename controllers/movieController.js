@@ -275,3 +275,51 @@ export const deleteMovie = async (req, res, next) => {
     res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
   }
 }
+
+
+export const getTopActionMovies = async (req, res) => {
+  
+  try {
+    const genreFilter = "Action";
+    const movies = await Movie.aggregate([
+      {
+        $match: {
+          genre: { $regex: genreFilter, $options: "i" },
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "movieId",
+          as: "reviews",
+        },
+      },
+      {
+        $addFields: {
+          avgRating: { $avg: "$reviews.rating" },
+        },
+      },
+      {
+        $addFields: {
+          avgRating: { $ifNull: ["$avgRating", 0] },
+        },
+      },
+      {
+        $project: {
+          reviews: 0,
+          videos: 0,
+          duration: 0,
+        },
+      },
+      {
+        $sort: { avgRating: -1 },
+      },
+      { $limit: 10 },
+    ]);
+
+    res.status(200).json({ data: movies, message: "Top action movies listed!" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
